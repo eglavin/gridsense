@@ -15,6 +15,7 @@ import {
 	type ChartConfig,
 } from "@/components/ui/chart";
 import { aggregateByGranularity, formatPeriodLabel } from "@/lib/aggregate";
+import { formatEur } from "@/lib/format";
 
 import type { CostSavingsDayRow } from "../queries";
 
@@ -69,8 +70,13 @@ export function CostChart({ data }: { data: CostSavingsDayRow[] }) {
 						<ComposedChart data={chartData}>
 							<CartesianGrid vertical={false} />
 							<XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} />
-							<YAxis tickLine={false} axisLine={false} width={40} />
-							<ChartTooltip content={<ChartTooltipContent />} />
+							<YAxis
+								tickLine={false}
+								axisLine={false}
+								width={40}
+								tickFormatter={(v: number) => formatEur(v)}
+							/>
+							<ChartTooltip content={<ChartTooltipContent valueFormatter={formatEur} />} />
 							<ChartLegend
 								content={
 									<InteractiveLegendContent config={config} hidden={hidden} onToggle={toggle} />

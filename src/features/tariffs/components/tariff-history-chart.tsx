@@ -11,6 +11,7 @@ import {
 	type ChartConfig,
 } from "@/components/ui/chart";
 import { formatPeriodLabel } from "@/lib/aggregate";
+import { formatEur } from "@/lib/format";
 
 import type { MonthlyTariffRow } from "../queries";
 
@@ -18,6 +19,8 @@ const config = {
 	importRate: { label: "Import rate (€/kWh)", color: "var(--import-colour)" },
 	exportRate: { label: "Export rate (€/kWh)", color: "var(--export-colour)" },
 } satisfies ChartConfig;
+
+const fmtRate = (v: number) => formatEur(v, 3);
 
 export function TariffHistoryChart({ data }: { data: MonthlyTariffRow[] }) {
 	const { hidden, toggle, isHidden } = useSeriesVisibility();
@@ -33,13 +36,8 @@ export function TariffHistoryChart({ data }: { data: MonthlyTariffRow[] }) {
 			<LineChart data={chartData}>
 				<CartesianGrid vertical={false} />
 				<XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} />
-				<YAxis
-					tickLine={false}
-					axisLine={false}
-					width={50}
-					tickFormatter={(v: number) => `€${v.toFixed(2)}`}
-				/>
-				<ChartTooltip content={<ChartTooltipContent />} />
+				<YAxis tickLine={false} axisLine={false} width={50} tickFormatter={fmtRate} />
+				<ChartTooltip content={<ChartTooltipContent valueFormatter={fmtRate} />} />
 				<ChartLegend
 					content={<InteractiveLegendContent config={config} hidden={hidden} onToggle={toggle} />}
 				/>
