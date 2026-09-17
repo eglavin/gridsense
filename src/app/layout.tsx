@@ -24,7 +24,7 @@ const nunitoSans = Nunito_Sans({
 });
 
 export const metadata: Metadata = {
-	title: "Power Usage",
+	title: "GridSense",
 	description: "Household solar, EV charging, and grid usage dashboard",
 };
 

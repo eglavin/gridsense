@@ -1,4 +1,4 @@
-# Power Usage
+# GridSense
 
 A local dashboard for household solar generation, EV charging, and grid usage — built with Next.js, shadcn/ui, and a local SQLite database.
 
@@ -6,7 +6,7 @@ A local dashboard for household solar generation, EV charging, and grid usage �
 
 ```bash
 pnpm install
-pnpm db:migrate   # creates data/powerusage.db
+pnpm db:migrate   # creates data/gridsense.db
 pnpm dev
 ```
 
@@ -40,7 +40,7 @@ Next.js 16 (App Router) · shadcn/ui (base-nova/Base UI preset) · Recharts · D
 | `pnpm format`               | Format the codebase with Oxfmt                                |
 | `pnpm format:check`         | Check formatting without writing                              |
 | `pnpm db:generate`          | Generate a Drizzle migration after editing `src/db/schema.ts` |
-| `pnpm db:migrate`           | Apply pending migrations to `data/powerusage.db`              |
+| `pnpm db:migrate`           | Apply pending migrations to `data/gridsense.db`               |
 
 ## Known limitation
 

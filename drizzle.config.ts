@@ -5,6 +5,6 @@ export default defineConfig({
 	schema: "./src/db/schema.ts",
 	dialect: "sqlite",
 	dbCredentials: {
-		url: "./data/powerusage.db",
+		url: "./data/gridsense.db",
 	},
 });

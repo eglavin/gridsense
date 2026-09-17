@@ -32,7 +32,7 @@ export function TopNav() {
 			<div className="flex h-14 items-center gap-2 px-4 sm:gap-4">
 				<Link href="/" className="flex shrink-0 items-center gap-2">
 					<Zap className="text-primary size-5" />
-					<span className="font-semibold">Power Usage</span>
+					<span className="font-semibold">GridSense</span>
 				</Link>
 
 				<nav className="hidden flex-1 items-center gap-1 md:flex">

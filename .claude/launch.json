@@ -2,7 +2,7 @@
 	"version": "0.0.1",
 	"configurations": [
 		{
-			"name": "powerusage-dev",
+			"name": "gridsense-dev",
 			"runtimeExecutable": "C:/Users/eanna/AppData/Local/mise/installs/node/24.20.0/pnpm.cmd",
 			"runtimeArgs": ["dev"],
 			"port": 3000
