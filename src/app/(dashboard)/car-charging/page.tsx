@@ -3,17 +3,16 @@ import { ArrowDownToLine, ArrowUpFromLine, Sun, Zap } from "lucide-react";
 import { DatePicker } from "@/components/date-picker";
 import { StatCard } from "@/components/stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatKwh } from "@/lib/format";
+import { ChargeSplitChart, HourlyChart } from "@/features/car-charging/components/car-charts";
+import { ChargingTimeline } from "@/features/car-charging/components/charging-timeline";
 import {
 	getCarChargerDateRange,
 	getChargingTimeline,
 	getDaysWithCharging,
 	getHourlyForDay,
 	getMonthlyChargeTotals,
-} from "@/lib/queries/car-charging";
-
-import { ChargeSplitChart, HourlyChart } from "./car-charts";
-import { ChargingTimeline } from "./charging-timeline";
+} from "@/features/car-charging/queries";
+import { formatKwh } from "@/lib/format";
 
 function fmtKwh2(v: number) {
 	return `${formatKwh(v, 2)} kWh`;

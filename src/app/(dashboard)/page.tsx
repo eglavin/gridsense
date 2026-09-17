@@ -4,12 +4,12 @@ import Link from "next/link";
 import { DateRangePicker } from "@/components/date-range-picker";
 import { GranularityProvider } from "@/components/granularity-provider";
 import { StatCard } from "@/components/stat-card";
+import { OverviewChart } from "@/features/overview/components/overview-chart";
+import { getDailyOverview } from "@/features/overview/queries";
+import { getAvailableDateRange } from "@/lib/date-coverage";
 import { daysBetweenInclusive, resolveDateRange } from "@/lib/date-range";
 import { formatKwh } from "@/lib/format";
 import { getSharedGranularity } from "@/lib/granularity";
-import { getAvailableDateRange, getDailyOverview } from "@/lib/queries/overview";
-
-import { OverviewChart } from "./overview-chart";
 
 function fmtKwh(v: number) {
 	return `${formatKwh(v)} kWh`;

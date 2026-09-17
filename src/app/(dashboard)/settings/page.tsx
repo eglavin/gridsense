@@ -10,25 +10,23 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { listAppSettings } from "@/features/app-settings/actions";
+import { OptionsForm } from "@/features/app-settings/components/options-form";
+import { getDataCounts } from "@/features/danger-zone/actions";
+import { DangerZone } from "@/features/danger-zone/components/danger-zone";
+import { listIngestionLog } from "@/features/data-import/actions";
+import { UploadForm } from "@/features/data-import/components/upload-form";
+import { listTariffRates } from "@/features/tariffs/actions";
+import { TariffCsvControls } from "@/features/tariffs/components/tariff-csv-controls";
+import { TariffForm } from "@/features/tariffs/components/tariff-form";
+import { TariffHistoryChart } from "@/features/tariffs/components/tariff-history-chart";
+import { getMonthlyTariffHistory } from "@/features/tariffs/queries";
+import { listWeatherStatus } from "@/features/weather/actions";
+import { WeatherBackfill } from "@/features/weather/components/weather-backfill";
+import { WeatherLocationPicker } from "@/features/weather/components/weather-location-picker";
 import { formatNumber } from "@/lib/format";
-import { getMonthlyTariffHistory } from "@/lib/queries/cost";
 
-import {
-	getDataCounts,
-	listAppSettings,
-	listIngestionLog,
-	listTariffRates,
-	listWeatherStatus,
-} from "./actions";
-import { DangerZone } from "./danger-zone";
-import { OptionsForm } from "./options-form";
 import { SettingsTabs } from "./settings-tabs";
-import { TariffCsvControls } from "./tariff-csv-controls";
-import { TariffForm } from "./tariff-form";
-import { TariffHistoryChart } from "./tariff-history-chart";
-import { UploadForm } from "./upload-form";
-import { WeatherBackfill } from "./weather-backfill";
-import { WeatherLocationPicker } from "./weather-location-picker";
 
 export default async function SettingsPage({
 	searchParams,

@@ -3,13 +3,16 @@ import { Sun, Leaf, TreePine } from "lucide-react";
 import { DateRangePicker } from "@/components/date-range-picker";
 import { GranularityProvider } from "@/components/granularity-provider";
 import { StatCard } from "@/components/stat-card";
+import {
+	GenerationChart,
+	SelfConsumptionChart,
+	YearOverYearChart,
+} from "@/features/solar/components/solar-charts";
+import { getSolarDaily, getSolarDateRange, getSolarMonthlyByYear } from "@/features/solar/queries";
+import { getWeatherDaily } from "@/features/weather/queries";
 import { daysBetweenInclusive, resolveDateRange } from "@/lib/date-range";
 import { formatKwh, formatNumber } from "@/lib/format";
 import { getSharedGranularity } from "@/lib/granularity";
-import { getSolarDaily, getSolarDateRange, getSolarMonthlyByYear } from "@/lib/queries/solar";
-import { getWeatherDaily } from "@/lib/queries/weather";
-
-import { GenerationChart, SelfConsumptionChart, YearOverYearChart } from "./solar-charts";
 
 function fmtKwh(v: number) {
 	return `${formatKwh(v)} kWh`;

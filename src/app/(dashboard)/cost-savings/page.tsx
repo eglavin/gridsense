@@ -5,13 +5,13 @@ import { DateRangePicker } from "@/components/date-range-picker";
 import { GranularityProvider } from "@/components/granularity-provider";
 import { StatCard } from "@/components/stat-card";
 import { Card, CardContent } from "@/components/ui/card";
+import { CostChart } from "@/features/cost-savings/components/cost-chart";
+import { getCostSavingsDaily } from "@/features/cost-savings/queries";
+import { getAllTariffRates } from "@/features/tariffs/queries";
+import { getAvailableDateRange } from "@/lib/date-coverage";
 import { daysBetweenInclusive, resolveDateRange } from "@/lib/date-range";
 import { formatEur } from "@/lib/format";
 import { getSharedGranularity } from "@/lib/granularity";
-import { getAllTariffRates, getCostSavingsDaily } from "@/lib/queries/cost";
-import { getAvailableDateRange } from "@/lib/queries/overview";
-
-import { CostChart } from "./cost-chart";
 
 const fmtEur = (v: number) => formatEur(v);
 
