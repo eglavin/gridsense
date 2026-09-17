@@ -1,9 +1,9 @@
 "use client";
 
-import { Sun, Car, Wallet, LayoutDashboard, Settings, Zap, Moon, Menu } from "lucide-react";
+import { Sun, Car, Wallet, LayoutDashboard, Settings, Zap, Moon, Menu, LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +12,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { signOut, useSession } from "@/features/auth/auth-client";
 import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
 
@@ -24,8 +25,16 @@ const NAV_ITEMS = [
 
 export function TopNav() {
 	const pathname = usePathname();
+	const router = useRouter();
 	const { resolvedTheme, setTheme } = useTheme();
+	const { data: session } = useSession();
 	const mounted = useMounted();
+
+	async function handleSignOut() {
+		await signOut();
+		router.push("/sign-in");
+		router.refresh();
+	}
 
 	return (
 		<header className="bg-background sticky top-0 z-40 border-b">
@@ -112,6 +121,30 @@ export function TopNav() {
 				>
 					{mounted && resolvedTheme === "dark" ? <Sun /> : <Moon />}
 				</Button>
+
+				{session && (
+					<DropdownMenu>
+						<DropdownMenuTrigger
+							render={
+								<Button
+									variant="ghost"
+									size="icon-lg"
+									className="shrink-0 cursor-pointer"
+									aria-label="Account menu"
+								>
+									<LogOut />
+								</Button>
+							}
+						/>
+						<DropdownMenuContent align="end" className="min-w-60">
+							<div className="text-muted-foreground px-2 py-1.5 text-sm">{session.user.email}</div>
+							<DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+								<LogOut className="size-4" />
+								Sign out
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				)}
 			</div>
 		</header>
 	);

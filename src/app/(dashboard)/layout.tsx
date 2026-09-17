@@ -1,6 +1,15 @@
-import { TopNav } from "@/components/nav";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+import { TopNav } from "@/components/nav";
+import { auth } from "@/features/auth/auth";
+
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+	const session = await auth.api.getSession({ headers: await headers() });
+	if (!session) {
+		redirect("/sign-in");
+	}
+
 	return (
 		<div className="flex min-h-screen flex-col">
 			<TopNav />

@@ -1,3 +1,4 @@
+export * from "@/features/auth/schema";
 export * from "@/features/car-charging/schema";
 export * from "@/features/solar/schema";
 export * from "@/features/data-import/schema";
