@@ -1,0 +1,1 @@
+DROP TABLE `ct_channel_labels`;

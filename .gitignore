@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local sqlite database
+/data/*.db
+/data/*.db-journal
+/data/*.db-wal
+/data/*.db-shm
+!/data/.gitkeep
+
+# Test files not to be persisted
+example-documents/

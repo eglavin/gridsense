@@ -1,0 +1,1 @@
+ALTER TABLE `tariff_rates` ADD `direction` text DEFAULT 'import' NOT NULL;

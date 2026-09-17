@@ -1,7 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+	experimental: {
+		serverActions: {
+			// Rolling 12-month Zappi hourly exports run a few MB; give uploads headroom.
+			bodySizeLimit: "20mb",
+		},
+	},
 };
 
 export default nextConfig;

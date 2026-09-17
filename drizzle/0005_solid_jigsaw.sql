@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `tariff_rates_direction_effective_from_unique` ON `tariff_rates` (`direction`,`effective_from`);

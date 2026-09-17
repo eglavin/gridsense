@@ -1,0 +1,1 @@
+ALTER TABLE `tariff_rates` DROP COLUMN `effective_to`;

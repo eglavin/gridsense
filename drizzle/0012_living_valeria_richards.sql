@@ -1,0 +1,1 @@
+ALTER TABLE `app_settings` ADD `timezone` text DEFAULT 'Europe/Dublin' NOT NULL;

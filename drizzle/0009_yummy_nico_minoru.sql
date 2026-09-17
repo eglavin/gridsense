@@ -1,0 +1,1 @@
+ALTER TABLE `app_settings` ADD `cost_savings_grid_source` text DEFAULT 'blended' NOT NULL;

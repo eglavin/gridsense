@@ -1,0 +1,1 @@
+ALTER TABLE `app_settings` ADD `car_charging_grid_source` text DEFAULT 'esb' NOT NULL;
