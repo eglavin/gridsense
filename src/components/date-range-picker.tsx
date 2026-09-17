@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { DATE_RANGE_COOKIE } from "@/constants/date-range-constants";
+import { DATE_RANGE_COOKIE, MIN_SELECTABLE_DATE } from "@/constants/date-range-constants";
 import { cn } from "@/lib/utils";
 
 function parseDate(value: string): Date {
@@ -146,6 +146,8 @@ export function DateRangePicker({ from, to }: { from: string; to: string }) {
 							weekStartsOn={1}
 							defaultMonth={range?.from}
 							showWeekNumber
+							disabled={{ before: MIN_SELECTABLE_DATE }}
+							excludeDisabled
 						/>
 					</div>
 				</PopoverContent>

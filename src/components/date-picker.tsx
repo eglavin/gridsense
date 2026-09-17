@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { MIN_SELECTABLE_DATE } from "@/constants/date-range-constants";
 
 function parseDate(value: string): Date {
 	return parseISO(value);
@@ -73,6 +74,7 @@ export function DatePicker({ day, paramName = "day" }: { day: string; paramName?
 						numberOfMonths={2}
 						weekStartsOn={1}
 						showWeekNumber
+						disabled={{ before: MIN_SELECTABLE_DATE }}
 					/>
 				</PopoverContent>
 			</Popover>
