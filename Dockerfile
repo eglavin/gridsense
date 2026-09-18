@@ -13,9 +13,11 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 FROM deps AS build
 COPY . .
-# Better Auth throws during page-data collection without a secret; this placeholder is scoped to the build
-# command and never reaches the runtime stage, which must be given a real BETTER_AUTH_SECRET.
-RUN BETTER_AUTH_SECRET=build-only-placeholder pnpm build
+# Page-data collection imports src/db/client.ts, which opens the SQLite file at module load, so the directory
+# must exist (.dockerignore strips data/). The build-time DB stays in this stage; the runtime stage never copies it.
+# Better Auth also throws during that step without a secret; the placeholder is scoped to this command and never
+# reaches the runtime stage, which must be given a real BETTER_AUTH_SECRET.
+RUN mkdir -p data && BETTER_AUTH_SECRET=build-only-placeholder pnpm build
 
 FROM node:24-bookworm-slim AS runtime
 ENV NODE_ENV=production
