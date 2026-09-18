@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -27,6 +29,8 @@ import { WeatherLocationPicker } from "@/features/weather/components/weather-loc
 import { formatNumber } from "@/lib/format";
 
 import { SettingsTabs } from "./settings-tabs";
+
+export const metadata: Metadata = { title: "Settings" };
 
 export default async function SettingsPage({
 	searchParams,

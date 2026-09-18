@@ -1,4 +1,5 @@
 import { ArrowDownToLine, ArrowUpFromLine, Sun, Zap } from "lucide-react";
+import type { Metadata } from "next";
 
 import { DatePicker } from "@/components/date-picker";
 import { StatCard } from "@/components/stat-card";
@@ -17,6 +18,8 @@ import { formatKwh } from "@/lib/format";
 function fmtKwh2(v: number) {
 	return `${formatKwh(v, 2)} kWh`;
 }
+
+export const metadata: Metadata = { title: "Car charging" };
 
 export default async function CarChargingPage({
 	searchParams,

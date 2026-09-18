@@ -1,4 +1,5 @@
 import { Sun, Leaf, TreePine } from "lucide-react";
+import type { Metadata } from "next";
 
 import { DateRangePicker } from "@/components/date-range-picker";
 import { GranularityProvider } from "@/components/granularity-provider";
@@ -26,6 +27,8 @@ function fmtTrees(v: number) {
 		maximumFractionDigits: 1,
 	});
 }
+
+export const metadata: Metadata = { title: "Solar" };
 
 export default async function SolarPage({
 	searchParams,

@@ -1,4 +1,5 @@
 import { ArrowDownToLine, Sun, Scale } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { DateRangePicker } from "@/components/date-range-picker";
@@ -14,6 +15,8 @@ import { formatEur } from "@/lib/format";
 import { getSharedGranularity } from "@/lib/granularity";
 
 const fmtEur = (v: number) => formatEur(v);
+
+export const metadata: Metadata = { title: "Cost & savings" };
 
 export default async function CostSavingsPage({
 	searchParams,

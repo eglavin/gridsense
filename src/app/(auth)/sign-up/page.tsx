@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SignUpForm } from "@/features/auth/components/sign-up-form";
+
+export const metadata: Metadata = { title: "Sign up" };
 
 export default function SignUpPage() {
 	return (
