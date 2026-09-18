@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 
 import { db } from "@/db/client";
 import { getAppSettings } from "@/features/app-settings/settings";
+import { requireSession } from "@/features/auth/session";
 import { getAvailableDateRange } from "@/lib/date-coverage";
 
 import { fetchWeatherDaily } from "./ingest";
@@ -13,6 +14,7 @@ import { getWeatherStatus, type WeatherStatus } from "./queries";
 import { weatherDaily } from "./schema";
 
 export async function listWeatherStatus(): Promise<WeatherStatus> {
+	await requireSession();
 	return getWeatherStatus();
 }
 
@@ -25,6 +27,7 @@ export interface BackfillWeatherResult {
 }
 
 export async function backfillWeather(): Promise<BackfillWeatherResult> {
+	await requireSession();
 	const { min, max } = getAvailableDateRange();
 	if (!min || !max) {
 		return {

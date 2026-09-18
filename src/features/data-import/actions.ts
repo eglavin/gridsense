@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import { db } from "@/db/client";
 import { getAppSettings } from "@/features/app-settings/settings";
+import { requireSession } from "@/features/auth/session";
 import { parseCarChargerCsv, upsertCarChargerRows } from "@/features/car-charging/ingest";
 import { parseSolarXlsx, upsertSolarRows } from "@/features/solar/ingest";
 
@@ -24,6 +25,7 @@ export interface UploadFileSummary {
 }
 
 export async function uploadFiles(formData: FormData): Promise<UploadFileSummary[]> {
+	await requireSession();
 	const files = formData.getAll("files").filter((f): f is File => f instanceof File);
 	const summaries: UploadFileSummary[] = [];
 	const { timezone } = getAppSettings();
@@ -139,5 +141,6 @@ export async function uploadFiles(formData: FormData): Promise<UploadFileSummary
 }
 
 export async function listIngestionLog() {
+	await requireSession();
 	return db.select().from(ingestionLog).orderBy(desc(ingestionLog.uploadedAt)).limit(50);
 }

@@ -4,11 +4,13 @@ import { desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 import { db } from "@/db/client";
+import { requireSession } from "@/features/auth/session";
 
 import { parseTariffCsv } from "./ingest";
 import { tariffRates } from "./schema";
 
 export async function listTariffRates() {
+	await requireSession();
 	return db.select().from(tariffRates).orderBy(desc(tariffRates.effectiveFrom));
 }
 
@@ -23,6 +25,7 @@ export async function addTariffRate(
 	eurPerKwh: number,
 	effectiveFrom: string,
 ) {
+	await requireSession();
 	await db
 		.insert(tariffRates)
 		.values({ direction, eurPerKwh, effectiveFrom })
@@ -36,6 +39,7 @@ export async function addTariffRate(
 }
 
 export async function deleteTariffRate(id: number) {
+	await requireSession();
 	await db.delete(tariffRates).where(eq(tariffRates.id, id));
 
 	revalidatePath("/settings");
@@ -52,6 +56,7 @@ export interface ImportTariffRatesResult {
 }
 
 export async function importTariffRatesCsv(formData: FormData): Promise<ImportTariffRatesResult> {
+	await requireSession();
 	const file = formData.get("file");
 	if (!(file instanceof File)) {
 		return { status: "error", message: "No file provided." };

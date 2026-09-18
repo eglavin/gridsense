@@ -4,6 +4,7 @@ import { count, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 import { db } from "@/db/client";
+import { requireSession } from "@/features/auth/session";
 import { carChargerHourly } from "@/features/car-charging/schema";
 import { esbGrid30Min, ingestionLog } from "@/features/data-import/schema";
 import { solarDaily } from "@/features/solar/schema";
@@ -17,6 +18,7 @@ export interface DataCounts {
 }
 
 export async function getDataCounts(): Promise<DataCounts> {
+	await requireSession();
 	const [car, solar, esb] = await Promise.all([
 		db.select({ n: count() }).from(carChargerHourly),
 		db.select({ n: count() }).from(solarDaily),
@@ -33,6 +35,7 @@ export async function getDataCounts(): Promise<DataCounts> {
 export type ClearableSource = "car_charger" | "solar" | "esb";
 
 export async function clearSourceData(sourceType: ClearableSource) {
+	await requireSession();
 	db.transaction((tx) => {
 		if (sourceType === "car_charger") {
 			tx.delete(carChargerHourly).run();
@@ -48,6 +51,7 @@ export async function clearSourceData(sourceType: ClearableSource) {
 }
 
 export async function clearAllData() {
+	await requireSession();
 	db.transaction((tx) => {
 		tx.delete(carChargerHourly).run();
 		tx.delete(solarDaily).run();

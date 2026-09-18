@@ -4,8 +4,13 @@ import { NextResponse } from "next/server";
 
 import { db } from "@/db/client";
 import { tariffRates } from "@/db/schema";
+import { getSession } from "@/features/auth/session";
 
 export async function GET() {
+	if (!(await getSession())) {
+		return new NextResponse("Unauthorized", { status: 401 });
+	}
+
 	const rows = await db
 		.select()
 		.from(tariffRates)
