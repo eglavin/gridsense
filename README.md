@@ -26,6 +26,19 @@ Both sources are periodic exports — the Zappi CSV is a rolling 12-month window
 - **Tariff Rates** — add your €/kWh rate (with an effective-from date) so the Cost & Savings page can estimate grid import cost. Rates support changing over time; adding a new open-ended rate automatically closes out the previous one.
 - **CT Labels** — the Zappi hub's three external CT clamps can be wired to anything (immersion heater, etc.); label them here once you know what they're measuring.
 
+## Docker
+
+Images are published to GHCR on every push to `main` (`latest`) and on `v*` tags. Migrations run automatically on container start.
+
+```bash
+docker run -d -p 3000:3000 -v gridsense-data:/app/data \
+  -e BETTER_AUTH_SECRET="$(openssl rand -base64 32)" \
+  -e BETTER_AUTH_URL=http://localhost:3000 \
+  ghcr.io/<owner>/<repo>:latest
+```
+
+Use a named volume for `/app/data` (the container runs as the non-root `node` user, so a bind mount must be writable by uid 1000). Set `ENABLE_SIGN_UP=true` to create the first account, then turn it off again.
+
 ## Tech stack
 
 Next.js 16 (App Router) · shadcn/ui (base-nova/Base UI preset) · Recharts · Drizzle ORM + better-sqlite3 · csv-parse · SheetJS (xlsx) · Zod

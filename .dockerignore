@@ -1,0 +1,13 @@
+.git
+.github
+.claude
+.vscode
+.next
+node_modules
+data
+example-documents
+.env*
+!.env.example
+*.tsbuildinfo
+Dockerfile
+.dockerignore
