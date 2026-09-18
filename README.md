@@ -1,32 +1,72 @@
 # GridSense
 
-A local dashboard for household solar generation, EV charging, and grid usage — built with Next.js, shadcn/ui, and a local SQLite database.
+GridSense is a self-hosted dashboard that pulls your household energy data into one place: solar generation, EV charging, and what you import from and export to the grid. Upload the exports you already get from your inverter portal, your myenergi charger, and your electricity network, and GridSense shows how much of your solar you actually use, how much of your EV charging is powered by the sun, and what it all costs.
 
-## Setup
+Everything runs on your own machine. Your data lives in a single local SQLite file, and the only outside service GridSense talks to is the free [Open-Meteo](https://open-meteo.com) weather archive (optional, no API key, and only your configured coordinates are sent).
 
-```bash
-pnpm install
-pnpm db:migrate   # creates data/gridsense.db
-pnpm dev
-```
+## What it does
 
-Open [http://localhost:3000](http://localhost:3000). On first run there's no data yet — go to **Settings → Data Import** and upload your exports.
+### Overview
 
-## Data sources
+A whole-house picture for any date range: grid import, grid export, solar generated, EV charged, total usage, and how much of your generated solar you used directly. Two percentages tell you the story at a glance:
 
-- **Car charger (Zappi/myenergi)** — hourly CSV export. `Net Grid Import/Export` is whole-house grid exchange from the incoming-powerline CT; `Diverter`/`Boosted Energy` give a direct solar-vs-grid split of EV charging.
-- **Solar (Solarman/Deye-style inverter portal)** — one XLSX export per calendar year, daily granularity.
+- **Self-consumption**: how much of the solar you generate you use yourself rather than export.
+- **Self-sufficiency**: how much of your total usage was covered by your own solar rather than the grid.
 
-## Re-uploading new exports
+A daily energy flow chart lets you switch between day, month and year views, and the choice carries across every page.
 
-Both sources are periodic exports — the Zappi CSV is a rolling 12-month window, the solar XLSX is per calendar year. When you get a new one, just upload it again in **Settings → Data Import**: rows are upserted by their natural key (serial number + timestamp for the car charger, plant + date for solar), so overlapping data updates in place and nothing gets duplicated. The import history table shows how many rows were new vs. updated on each upload.
+![Overpage page screenshot example](./assets/overview-page.jpg)
 
-## Settings
+### Solar
 
-- **Tariff Rates** — add your €/kWh rate (with an effective-from date) so the Cost & Savings page can estimate grid import cost. Rates support changing over time; adding a new open-ended rate automatically closes out the previous one.
-- **CT Labels** — the Zappi hub's three external CT clamps can be wired to anything (immersion heater, etc.); label them here once you know what they're measuring.
+Generation trends from your inverter, with CO2 and tree-equivalent savings. Overlay the weather (temperature, cloud cover, sunshine and rainfall) to see why a given week was good or bad, track self-consumption over time, and compare each month against previous years.
 
-## Docker
+![Solar page screenshot example](./assets/solar-page.jpg)
+
+### Car charging
+
+Built for myenergi Zappi users. Pick any day to see hourly grid exchange alongside EV charging, split into **solar** and **boost/grid** energy, with a 30-day charging history for quick navigation and monthly totals showing how much of your charging comes from the sun.
+
+![Car charger page screenshot example](./assets/car-charging-page.jpg)
+
+### Cost & savings
+
+Estimates what your grid imports cost and what your exports earn, using your own tariff rates. Rates have effective-from dates, so a price change part-way through the year is priced correctly, and a chart compares daily cost against income. Import and export rates can be imported and exported as CSV, so they are easy to back up or edit in bulk.
+
+![Cost and saving page screenshot example](./assets/cost-and-savings-page.jpg)
+
+### Weather
+
+Set your location on a map and backfill daily weather for your data range from Open-Meteo. It feeds the solar charts and lets you separate a poor generation month from a poor weather month.
+
+## Bringing your data in
+
+Upload files under **Settings, Data Import**. GridSense detects the type of each file automatically:
+
+| Source                                    | File                             | Provides                                                                           |
+| ----------------------------------------- | -------------------------------- | ---------------------------------------------------------------------------------- |
+| **ESB Networks** meter data               | HDF `.csv` (half-hourly, in kWh) | Metered grid import and export                                                     |
+| **myenergi Zappi**                        | hourly `.csv` export             | EV charging (solar vs boost), plus a whole-house CT clamp reading of grid exchange |
+| **Solarman / Deye-style inverter portal** | yearly `.xlsx` export            | Daily solar generation                                                             |
+
+You can start with just one source. Pages fill in as data arrives and tell you what is missing.
+
+Exports are periodic, so re-uploading is safe: rows are matched on their natural key (device and timestamp, or plant and date), overlapping data is updated in place and nothing is duplicated. An import history table shows how many rows in each upload were new and how many were updated.
+
+## Choosing where grid figures come from
+
+You may have two views of your grid usage: your ESB meter (accurate) and the Zappi's CT clamp (available if you skipped the ESB export, or for days it doesn't cover). Under **Settings, Options** you choose how they combine:
+
+- **Fallback:** use ESB where available and fill gaps from the Zappi clamp, or use ESB only and leave uncovered days out.
+- **Per page:** force the Car Charging and Cost & Savings pages to a single source, with no blending.
+
+You can also set your house timezone, which anchors every "local day" calculation, and clear stored data per source from the Danger Zone tab.
+
+## Accounts and privacy
+
+GridSense requires a sign-in. Sign-up is off by default, so a public deployment can't be used by strangers: enable it briefly to create your account, then turn it off again. Nothing is sent to third parties apart from the optional weather lookup.
+
+## Running it
 
 Images are published to GHCR on every push to `main` (`latest`) and on `v*` tags. Migrations run automatically on container start.
 
@@ -34,27 +74,27 @@ Images are published to GHCR on every push to `main` (`latest`) and on `v*` tags
 docker run -d -p 3000:3000 -v gridsense-data:/app/data \
   -e BETTER_AUTH_SECRET="$(openssl rand -base64 32)" \
   -e BETTER_AUTH_URL=http://localhost:3000 \
-  ghcr.io/<owner>/<repo>:latest
+  ghcr.io/eglavin/gridsense:latest
 ```
 
-Use a named volume for `/app/data` (the container runs as the non-root `node` user, so a bind mount must be writable by uid 1000). Set `ENABLE_SIGN_UP=true` to create the first account, then turn it off again.
+Or with Docker Compose (`docker compose up -d`, works with `podman compose` too):
 
-## Tech stack
+```yaml
+services:
+  gridsense:
+    image: ghcr.io/eglavin/gridsense:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set a long random secret}
+      BETTER_AUTH_URL: http://localhost:3000
+      ENABLE_SIGN_UP: "false"
+    volumes:
+      - gridsense-data:/app/data
 
-Next.js 16 (App Router) · shadcn/ui (base-nova/Base UI preset) · Recharts · Drizzle ORM + better-sqlite3 · csv-parse · SheetJS (xlsx) · Zod
+volumes:
+  gridsense-data:
+```
 
-## Scripts
-
-| Command                     | Description                                                   |
-| --------------------------- | ------------------------------------------------------------- |
-| `pnpm dev`                  | Start the dev server                                          |
-| `pnpm build` / `pnpm start` | Production build / run                                        |
-| `pnpm lint`                 | Oxlint                                                        |
-| `pnpm format`               | Format the codebase with Oxfmt                                |
-| `pnpm format:check`         | Check formatting without writing                              |
-| `pnpm db:generate`          | Generate a Drizzle migration after editing `src/db/schema.ts` |
-| `pnpm db:migrate`           | Apply pending migrations to `data/gridsense.db`               |
-
-## Known limitation
-
-Car charging on a given day can only be split into solar-vs-grid where the Zappi's `Diverter`/`Boosted Energy` fields are populated — if a unit doesn't report those (or reports zero throughout), the Car Charging page's solar/grid split for that period will read as zero even though charging happened.
+Put `BETTER_AUTH_SECRET=<output of openssl rand -base64 32>` in a `.env` file next to `compose.yaml`; Compose reads it automatically. Use a named volume for `/app/data` (the container runs as the non-root `node` user, so a bind mount must be writable by uid 1000). Set `ENABLE_SIGN_UP=true` to create the first account, then turn it off again.
