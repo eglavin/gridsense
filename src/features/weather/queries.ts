@@ -59,3 +59,13 @@ export function getWeatherStatus(): WeatherStatus {
 		maxDate: row?.max ?? null,
 	};
 }
+
+/** Hourly cloud cover for one local date, keyed by "HH:mm" hour label. */
+export function getHourlyCloudCover(date: string): Map<string, number | null> {
+	const rows = db.all<{ hour: string; cloud_cover_pct: number | null }>(sql`
+    SELECT hour, cloud_cover_pct
+    FROM weather_hourly
+    WHERE local_date = ${date}
+  `);
+	return new Map(rows.map((r) => [r.hour, r.cloud_cover_pct]));
+}

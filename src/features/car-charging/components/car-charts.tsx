@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
+import { Area, Bar, BarChart, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
 
 import { InteractiveLegendContent, useSeriesVisibility } from "@/components/interactive-legend";
 import {
@@ -24,6 +24,7 @@ const hourlyConfig = {
 		label: "EV charge, boost/grid (Wh)",
 		color: "var(--ev-boost-colour)",
 	},
+	cloudCoverPct: { label: "Cloud cover (%)", color: "var(--cloud-cover-colour)" },
 } satisfies ChartConfig;
 
 export function HourlyChart({ data }: { data: HourlyChargeRow[] }) {
@@ -34,26 +35,46 @@ export function HourlyChart({ data }: { data: HourlyChargeRow[] }) {
 			<ComposedChart data={data}>
 				<CartesianGrid vertical={false} />
 				<XAxis dataKey="hour" tickLine={false} axisLine={false} tickMargin={8} />
-				<YAxis tickLine={false} axisLine={false} width={40} />
+				<YAxis yAxisId="left" tickLine={false} axisLine={false} width={40} />
+				<YAxis
+					yAxisId="right"
+					orientation="right"
+					tickLine={false}
+					axisLine={false}
+					width={40}
+					domain={[0, 100]}
+				/>
 				<ChartTooltip content={<ChartTooltipContent className="min-w-80" />} />
 				<ChartLegend
 					content={
 						<InteractiveLegendContent config={hourlyConfig} hidden={hidden} onToggle={toggle} />
 					}
 				/>
+				<Area
+					yAxisId="right"
+					dataKey="cloudCoverPct"
+					fill="var(--color-cloudCoverPct)"
+					fillOpacity={0.15}
+					stroke="var(--color-cloudCoverPct)"
+					connectNulls
+					hide={isHidden("cloudCoverPct")}
+				/>
 				<Bar
+					yAxisId="left"
 					dataKey="netGridImportWh"
 					fill="var(--color-netGridImportWh)"
 					radius={2}
 					hide={isHidden("netGridImportWh")}
 				/>
 				<Bar
+					yAxisId="left"
 					dataKey="netGridExportWh"
 					fill="var(--color-netGridExportWh)"
 					radius={2}
 					hide={isHidden("netGridExportWh")}
 				/>
 				<Line
+					yAxisId="left"
 					dataKey="evChargeSolarWh"
 					stroke="var(--color-evChargeSolarWh)"
 					strokeWidth={2}
@@ -61,6 +82,7 @@ export function HourlyChart({ data }: { data: HourlyChargeRow[] }) {
 					hide={isHidden("evChargeSolarWh")}
 				/>
 				<Line
+					yAxisId="left"
 					dataKey="evChargeGridWh"
 					stroke="var(--color-evChargeGridWh)"
 					strokeWidth={2}

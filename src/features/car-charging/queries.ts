@@ -4,6 +4,7 @@ import { sql } from "drizzle-orm";
 
 import { db } from "@/db/client";
 import { getAppSettings } from "@/features/app-settings/settings";
+import { getHourlyCloudCover } from "@/features/weather/queries";
 
 export interface HourlyChargeRow {
 	hour: string;
@@ -11,6 +12,7 @@ export interface HourlyChargeRow {
 	netGridExportWh: number;
 	evChargeSolarWh: number;
 	evChargeGridWh: number;
+	cloudCoverPct: number | null;
 }
 
 /** ESB's half-hour readings bucketed into the local hour each belongs to, keyed the same way car_charger_hourly labels its own hourly rows — by the END of the hour the reading covers (e.g. both the 12:30 and 13:00 readings, covering the 12:00-13:00 period, are keyed "13:00") — so the two sources line up hour-for-hour rather than being off by one. */
@@ -71,10 +73,13 @@ export function getHourlyForDay(date: string): HourlyChargeRow[] {
 	// ever shows one source's figure: no blending between the two.
 	const esbBuckets = carChargingGridSource === "esb" ? getEsbHourlyBuckets(date, timezone) : null;
 
+	const cloudCover = getHourlyCloudCover(date);
+
 	return rows.map((r) => {
 		const hour = r.timestamp.slice(11, 16);
 		return {
 			hour,
+			cloudCoverPct: cloudCover.get(hour) ?? null,
 			netGridImportWh:
 				carChargingGridSource === "esb"
 					? (esbBuckets?.get(hour)?.importWh ?? 0)

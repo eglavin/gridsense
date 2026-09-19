@@ -15,6 +15,19 @@ export const openMeteoDailyResponseSchema = z.object({
 	}),
 });
 
+export const openMeteoHourlyResponseSchema = z.object({
+	hourly: z.object({
+		time: z.array(z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/)),
+		cloud_cover: numericArray,
+	}),
+});
+
+export interface WeatherHourlyRow {
+	localDate: string;
+	hour: string;
+	cloudCoverPct: number | null;
+}
+
 export interface WeatherDailyRow {
 	date: string;
 	tempMaxC: number | null;
@@ -76,5 +89,39 @@ export async function fetchWeatherDaily(
 		precipitationMm: daily.precipitation_sum[i] ?? null,
 		shortwaveRadiationMjM2: daily.shortwave_radiation_sum[i] ?? null,
 		sunshineDurationS: daily.sunshine_duration[i] ?? null,
+	}));
+}
+
+export async function fetchWeatherHourly(
+	latitude: number,
+	longitude: number,
+	from: string,
+	to: string,
+	timezone: string,
+): Promise<WeatherHourlyRow[]> {
+	const url = new URL("https://archive-api.open-meteo.com/v1/archive");
+	url.searchParams.set("latitude", String(latitude));
+	url.searchParams.set("longitude", String(longitude));
+	url.searchParams.set("start_date", from);
+	url.searchParams.set("end_date", to);
+	url.searchParams.set("timezone", timezone);
+	url.searchParams.set("hourly", "cloud_cover");
+
+	const response = await fetch(url.toString());
+	if (!response.ok) {
+		throw new Error(`Open-Meteo request failed: ${response.status} ${response.statusText}`);
+	}
+
+	const result = openMeteoHourlyResponseSchema.safeParse(await response.json());
+	if (!result.success) {
+		throw new Error(`Unexpected Open-Meteo response shape: ${result.error.message}`);
+	}
+
+	const { hourly } = result.data;
+
+	return hourly.time.map((time, i) => ({
+		localDate: time.slice(0, 10),
+		hour: time.slice(11, 16),
+		cloudCoverPct: hourly.cloud_cover[i] ?? null,
 	}));
 }

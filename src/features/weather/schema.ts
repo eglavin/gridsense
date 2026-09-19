@@ -26,3 +26,24 @@ export const weatherDaily = sqliteTable(
 		index("weather_daily_date_idx").on(table.date),
 	],
 );
+
+// Hourly cloud cover for the car-charging hourly chart. `hour` is the local
+// "HH:mm" label (matching car_charger_hourly's labels) and `localDate` the
+// local calendar date, both in the configured timezone the archive API was
+// queried with.
+export const weatherHourly = sqliteTable(
+	"weather_hourly",
+	{
+		id: integer("id").primaryKey({ autoIncrement: true }),
+		localDate: text("local_date").notNull(),
+		hour: text("hour").notNull(),
+		cloudCoverPct: real("cloud_cover_pct"),
+		fetchedAt: text("fetched_at")
+			.notNull()
+			.default(sql`(CURRENT_TIMESTAMP)`),
+	},
+	(table) => [
+		unique("weather_hourly_date_hour_unique").on(table.localDate, table.hour),
+		index("weather_hourly_date_idx").on(table.localDate),
+	],
+);

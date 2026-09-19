@@ -9,9 +9,9 @@ import { getAppSettings } from "@/features/app-settings/settings";
 import { requireSession } from "@/features/auth/session";
 import { getAvailableDateRange } from "@/lib/date-coverage";
 
-import { fetchWeatherDaily } from "./ingest";
+import { fetchWeatherDaily, fetchWeatherHourly } from "./ingest";
 import { getWeatherStatus, type WeatherStatus } from "./queries";
-import { weatherDaily } from "./schema";
+import { weatherDaily, weatherHourly } from "./schema";
 
 export async function listWeatherStatus(): Promise<WeatherStatus> {
 	await requireSession();
@@ -47,8 +47,12 @@ export async function backfillWeather(): Promise<BackfillWeatherResult> {
 	const to = max < today ? max : today;
 
 	let rows;
+	let hourlyRows;
 	try {
-		rows = await fetchWeatherDaily(weatherLatitude, weatherLongitude, min, to, timezone);
+		[rows, hourlyRows] = await Promise.all([
+			fetchWeatherDaily(weatherLatitude, weatherLongitude, min, to, timezone),
+			fetchWeatherHourly(weatherLatitude, weatherLongitude, min, to, timezone),
+		]);
 	} catch (error) {
 		return {
 			status: "error",
@@ -87,9 +91,20 @@ export async function backfillWeather(): Promise<BackfillWeatherResult> {
 				})
 				.run();
 		}
+
+		for (const row of hourlyRows) {
+			tx.insert(weatherHourly)
+				.values(row)
+				.onConflictDoUpdate({
+					target: [weatherHourly.localDate, weatherHourly.hour],
+					set: { cloudCoverPct: row.cloudCoverPct },
+				})
+				.run();
+		}
 	});
 
 	revalidatePath("/solar");
+	revalidatePath("/car-charging");
 	revalidatePath("/settings");
 
 	return { status: "ok", daysFetched: rows.length, rowsInserted, rowsUpdated };
