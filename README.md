@@ -98,3 +98,15 @@ volumes:
 ```
 
 Put `BETTER_AUTH_SECRET=<output of openssl rand -base64 32>` in a `.env` file next to `compose.yaml`; Compose reads it automatically. Use a named volume for `/app/data` (the container runs as the non-root `node` user, so a bind mount must be writable by uid 1000). Set `ENABLE_SIGN_UP=true` to create the first account, then turn it off again.
+
+## Configuration
+
+GridSense is configured with environment variables, read at runtime, so changing one only needs a container restart, not a rebuild. `.env.example` lists them.
+
+| Variable             | Default               | Description                                                                                                                                                                                                                                                 |
+| -------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `BETTER_AUTH_SECRET` | none (required)       | Secret used to sign sessions and cookies. Use a long random value, e.g. `openssl rand -base64 32`, and keep it stable: changing it signs everyone out.                                                                                                      |
+| `BETTER_AUTH_URL`    | derived from requests | The origin you browse to, e.g. `http://192.168.1.20:3000` or `https://gridsense.example.com`. Set it when running behind a proxy or on a LAN address so auth redirects and origin checks match. Better Auth logs a warning if it is unset.                  |
+| `ENABLE_SIGN_UP`     | `false`               | Set to `true` to allow creating accounts. Enable it just long enough to create your own, then turn it off again.                                                                                                                                            |
+| `REQUIRE_HTTPS`      | `false`               | Set to `true` when the site is served over HTTPS (for example behind a reverse proxy). Adds `Strict-Transport-Security` and the CSP `upgrade-insecure-requests` directive. Leave it off for plain-HTTP deployments, or scripts and fonts will fail to load. |
+| `PORT` / `HOSTNAME`  | `3000` / `0.0.0.0`    | Port and interface the server listens on. Already set in the Docker image.                                                                                                                                                                                  |
